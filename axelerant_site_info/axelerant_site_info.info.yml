@@ -1,0 +1,5 @@
+name: 'axelerant site info'
+type: module
+description: 'Module add site api key field in Site information form, and utilise the api key for getting node data in json format'
+core: 8.x
+package: 'axelerant'

@@ -1,0 +1,9 @@
+
+axelerant_site_info.page_node_json:
+  path: '/page_json/{key}/{node}'
+  defaults:
+    _controller: '\Drupal\axelerant_site_info\Controller\DefaultController::pageNodeJsonApiAction'
+    _title: 'Basic Page Json'
+  requirements:
+    _custom_access: '\Drupal\axelerant_site_info\Controller\DefaultController::access'
+    _method: 'get'

@@ -1,0 +1,78 @@
+<?php
+
+/**
+ * @file
+ * Contains axelerant_site_info.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function axelerant_site_info_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the axelerant_site_info module.
+    case 'help.page.axelerant_site_info':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Module add site api key field in Site information form, and utilise the api key for getting node data in json format') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Add Site Api key to SiteInformationForm (form_id :: system_site_information_settings)
+ */
+function axelerant_site_info_form_system_site_information_settings_alter(
+  &$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+
+  // get the site api key saved in state object for key "siteapikey"
+  $site_api_key = \Drupal::state()->get('siteapikey');
+
+  // Add a textfield to save site api key
+  $form['site_api_key_detail'] = [
+    '#type' => 'details',
+    '#title' => t('Site API Key'),
+    '#open' => TRUE,
+  ];
+
+  $form['site_api_key_detail']['site_api_key'] = [
+    '#type' => 'textfield',
+    '#title' => t('Site Api Key'),
+    '#default_value' => $site_api_key,
+    '#description' => t('Site Api Key used for Basic Page Node Json Api'),
+    '#attributes' => [
+      'placeholder' => t('No API Key yet')
+    ]
+  ];
+
+
+
+  // Add custom form submit handler (function name :: axelerant_site_info_form_submit)
+  $form['actions']['submit']['#submit'][] = 'axelerant_site_info_form_submit';
+
+  // Update Form Submit action button text to 'Update Configuration', if Site Api Key is already saved
+  if($site_api_key) {
+    $form['actions']['submit']['#value'] = t('Update Configuration');
+  }
+}
+
+// custom form submit handler (form_id :: system_site_information_settings)
+function axelerant_site_info_form_submit(
+  &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+
+  // Save Site Api Key to state variable "siteapikey"
+  \Drupal::state()->set('siteapikey', $form_state->getValue('site_api_key'));
+
+  if(strlen($form_state->getValue('site_api_key'))) {
+    drupal_set_message(t('Success, Site API Key = @site_api_key has been saved', ['@site_api_key' => $form_state->getValue('site_api_key')]));
+  }
+}
+
+
